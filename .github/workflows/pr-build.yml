@@ -1,4 +1,4 @@
-name: Sample PR Builder for RecruitmentSetter
+name: AutoPartyFinderRefresher build
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-2022
 
     env:
-      Solution_Name: RecruitmentSetter
+      Solution_Name: AutoPartyFinderRefresher
 
     steps:
     - name: Checkout
@@ -26,14 +26,18 @@ jobs:
         Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
         Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
 
+    - name: Clone ECommons
+      run: |
+        git submodule update --init --recursive
+
     - name: Build with dotnet
       run: dotnet build --configuration Release
 
     - name: Store artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: RecruitmentSetter
-        path: .\RecruitmentSetter\bin\x64\Release\RecruitmentSetter\*
+        name: AutoPartyFinderRefresher
+        path: .\AutoPartyFinderRefresher\bin\x64\Release\AutoPartyFinderRefresher\*
         if-no-files-found: error
         retention-days: 1
 

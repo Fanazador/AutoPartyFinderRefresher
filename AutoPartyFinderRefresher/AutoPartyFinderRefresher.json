@@ -1,0 +1,12 @@
+{
+  "Author": "Fanazador",
+  "Name": "Auto Party Finder Refresher",
+  "Punchline": "I hate pf time limit I hate pf time limit I hate pf time limit",
+  "Description": "Automatically refreshes your pf, so you can touch grass without worry.\nSet the time interval on how often this plugin will triggers",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "recruitment",
+    "party",
+    "finder"
+  ]
+}
