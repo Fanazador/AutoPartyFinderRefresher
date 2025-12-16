@@ -1,0 +1,48 @@
+name: Release Plugin
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+      contents: write
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    env:
+      DALAMUD_HOME: /tmp/dalamud
+      DALAMUD_ARCHIVE_URL: ${{ vars.DALAMUD_ARCHIVE_URL || 'https://goatcorp.github.io/dalamud-distrib/latest.zip' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Download Dalamud Latest
+        run: |
+          wget ${{ env.DALAMUD_ARCHIVE_URL }} -O ${{ env.DALAMUD_HOME }}.zip
+          unzip ${{ env.DALAMUD_HOME }}.zip -d ${{ env.DALAMUD_HOME }}
+
+      - name: Restore Project
+        run: dotnet restore
+
+      - name: Build Project
+        run: |
+          dotnet build --configuration Release AutoPartyFinderRefresher/AutoPartyFinderRefresher.csproj -p:AssemblyVersion=${{ github.ref_name }}
+          releasedir="./AutoPartyFinderRefresher/bin/Release"
+          # zip latest.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinder.dll"
+          7z a latest.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinderRefresher.dll"
+          echo "ASSET=latest.zip" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{env.ASSET}}
