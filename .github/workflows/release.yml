@@ -37,9 +37,9 @@ jobs:
         run: |
           dotnet build --configuration Release AutoPartyFinderRefresher/AutoPartyFinderRefresher.csproj -p:AssemblyVersion=${{ github.ref_name }}
           releasedir="./AutoPartyFinderRefresher/bin/Release"
-          # zip latest.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinder.dll"
-          7z a latest.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinderRefresher.dll"
-          echo "ASSET=latest.zip" >> $GITHUB_ENV
+          # zip AutoPartyFinderRefresher.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinder.dll" "ECommons/ECommons/bit/Release/ECommons.dll"
+          7z a AutoPartyFinderRefresher.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinderRefresher.dll" "ECommons/ECommons/bit/Release/ECommons.dll"
+          echo "ASSET=AutoPartyFinderRefresher.zip" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
