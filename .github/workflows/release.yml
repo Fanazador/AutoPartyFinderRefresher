@@ -9,40 +9,33 @@ permissions:
       contents: write
 
 jobs:
-  Build:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
+
     env:
-      DALAMUD_HOME: /tmp/dalamud
-      DALAMUD_ARCHIVE_URL: ${{ vars.DALAMUD_ARCHIVE_URL || 'https://goatcorp.github.io/dalamud-distrib/latest.zip' }}
+      Solution_Name: AutoPartyFinderRefresher
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-        with:
-          submodules: 'recursive'
+    - name: Checkout
+      uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
+    - name: Install .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 9.0.x
 
-      - name: Download Dalamud Latest
-        run: |
-          wget ${{ env.DALAMUD_ARCHIVE_URL }} -O ${{ env.DALAMUD_HOME }}.zip
-          unzip ${{ env.DALAMUD_HOME }}.zip -d ${{ env.DALAMUD_HOME }}
+    - name: Download Dalamud
+      run: |
+        Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
+        Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
 
-      - name: Restore Project
-        run: dotnet restore
+    - name: Build with dotnet
+      run: |
+        dotnet build --configuration Release
 
-      - name: Build Project
-        run: |
-          dotnet build --configuration Release AutoPartyFinderRefresher/AutoPartyFinderRefresher.csproj -p:AssemblyVersion=${{ github.ref_name }}
-          releasedir="./AutoPartyFinderRefresher/bin/Release"
-          # zip AutoPartyFinderRefresher.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinder.dll" "ECommons/ECommons/bin/Release/ECommons.dll"
-          7z a AutoPartyFinderRefresher.zip "$releasedir/AutoPartyFinderRefresher.json" "$releasedir/AutoPartyFinderRefresher.dll" "ECommons/ECommons/bin/Release/ECommons.dll"
-          echo "ASSET=AutoPartyFinderRefresher.zip" >> $GITHUB_ENV
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            ${{env.ASSET}}
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: AutoPartyFinderRefresher/bin/x64/Release/AutoPartyFinderRefresher/latest.zip

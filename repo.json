@@ -4,7 +4,7 @@
     "Name": "AutoPartyFinderRefresher",
     "InternalName": "AutoPartyFinderRefresher",
     "Description": "Automatically refreshes your pf, so you can touch grass without worry.\nSet the time interval on how often this plugin will triggers",
-    "AssemblyVersion": "0.1.0",
+    "AssemblyVersion": "0.1.1",
     "TestingAssemblyVersion": null,
     "RepoUrl": "https://github.com/Fanazador/AutoPartyFinderRefresher",
     "ApplicableVersion": "any",
@@ -16,9 +16,9 @@
     "Punchline": "I hate pf time limit I hate pf time limit I hate pf time limit",
     "IsHide": false,
     "IsTestingExclusive": false,
-    "DownloadLinkInstall": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/download/0.1.1/AutoPartyFinderRefresher.zip",
-    "DownloadLinkTesting": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/download/0.1.1/AutoPartyFinderRefresher.zip",
-    "DownloadLinkUpdate": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/download/0.1.1/AutoPartyFinderRefresher.zip",
+    "DownloadLinkInstall": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/latest/download/latest.zip",
+    "DownloadLinkTesting": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/latest/download/latest.zip",
+    "DownloadLinkUpdate": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/latest/download/latest.zip",
     "DownloadCount": 0,
     "LastUpdate": 1701231234
   }
