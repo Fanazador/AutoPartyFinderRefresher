@@ -18,7 +18,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
   private const string CommandName = "/apr";
   private static readonly string CommandHelpMessage = """
     /apr - Toggle autoparty finder refresh
-    /apr c|cfg|config - Toggle config window
+    /apr c | cfg | config - Toggle config window
     """;
 
   public readonly WindowSystem WindowSystem = new("AutoPartyFinderRefresher");
@@ -31,7 +31,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
   private static readonly UIModule* UiModule = UIModule.Instance();
 
   private bool running = true;
-  
+
   private double elapsedTime = 0;
 
   public AutoPartyFinderRefresher(IDalamudPluginInterface pluginInterface)
@@ -84,8 +84,8 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
 
   private void OnCommand(string command, string args)
   {
-    
-    if (args=="c" || args == "cfg" || args =="config")
+
+    if (args == "c" || args == "cfg" || args == "config")
     {
       ConfigWindow.Toggle();
       return;
@@ -110,7 +110,11 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
   private void ConditionHandle(ConditionFlag flag, bool value)
   {
     if (flag == ConditionFlag.UsingPartyFinder)
+    {
       IsPlayerLookingForGroup = value;
+      if (!value)
+        elapsedTime = 0;
+    }
   }
 
   /// <summary>
@@ -122,7 +126,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     if (!running || !IsPlayerLookingForGroup)
       return;
 
-    if(elapsedTime > Convert.ToDouble(Config.RefreshMinuteInterval))
+    if (elapsedTime > Convert.ToDouble(Config.RefreshMinuteInterval))
     {
       Svc.Log.Information(elapsedTime + " minute have passed executing task.");
       try
@@ -141,9 +145,9 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     }
   }
 
- /// <summary>
- /// Using task manager queue commands to execute in order to refresh the pf timer.
- /// </summary>
+  /// <summary>
+  /// Using task manager queue commands to execute in order to refresh the pf timer.
+  /// </summary>
   private void ExecuteTask()
   {
     const int PartyFinderCommand = 57;
