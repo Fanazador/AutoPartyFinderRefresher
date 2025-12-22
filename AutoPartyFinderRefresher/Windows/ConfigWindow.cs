@@ -21,7 +21,7 @@ public class ConfigWindow : Window, IDisposable
 
     SizeConstraints = new()
     {
-        MinimumSize = new Vector2(Width, Height)
+      MinimumSize = new Vector2(Width, Height)
     };
 
     configuration = plugin.Config;
