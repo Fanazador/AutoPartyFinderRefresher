@@ -38,4 +38,4 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        files: AutoPartyFinderRefresher/bin/x64/Release/AutoPartyFinderRefresher/latest.zip
+        files: AutoPartyFinderRefresher/bin/Release/AutoPartyFinderRefresher/latest.zip
