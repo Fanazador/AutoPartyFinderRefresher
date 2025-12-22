@@ -16,12 +16,16 @@ public class ConfigWindow : Window, IDisposable
   private const uint IntervalMax = 60;
   public ConfigWindow(AutoPartyFinderRefresher plugin) : base("Auto Party Finder Refresher Setting###APRConfig")
   {
-    Flags = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
+    Flags = ImGuiWindowFlags.NoScrollbar |
             ImGuiWindowFlags.NoScrollWithMouse;
 
-    Size = new Vector2(Width, Height);
+    SizeConstraints = new()
+    {
+        MinimumSize = new Vector2(Width, Height)
+    };
 
     configuration = plugin.Config;
+
   }
 
   public void Dispose() { }
