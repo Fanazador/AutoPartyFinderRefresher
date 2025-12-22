@@ -1,0 +1,38 @@
+name: Release Plugin
+
+on: workflow_dispatch
+
+permissions:
+      contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: AutoPartyFinderRefresher
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+      with:
+        submodules: 'recursive'
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Download Dalamud
+      run: |
+        Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
+        Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
+
+    - name: Build with dotnet
+      run: |
+        dotnet build --configuration Release
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: AutoPartyFinderRefresher/bin/x64/Release/AutoPartyFinderRefresher/latest.zip
