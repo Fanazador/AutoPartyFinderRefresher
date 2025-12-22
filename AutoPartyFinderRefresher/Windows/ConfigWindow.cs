@@ -9,7 +9,7 @@ public class ConfigWindow : Window, IDisposable
 {
   private readonly Configuration configuration;
 
-  public uint Width = 232;
+  public uint Width = 500;
   public uint Height = 90;
 
   private const uint IntervalMin = 1;
@@ -20,7 +20,6 @@ public class ConfigWindow : Window, IDisposable
             ImGuiWindowFlags.NoScrollWithMouse;
 
     Size = new Vector2(Width, Height);
-    SizeCondition = ImGuiCond.Always;
 
     configuration = plugin.Config;
   }
