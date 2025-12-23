@@ -25,12 +25,18 @@ int main(int argc, char **argv)
     throw std::runtime_error("Failed to open repo.json");
     return 1;
   }
-  auto repo = nlohmann::ordered_json::parse(infile);
+  auto repos = nlohmann::ordered_json::parse(infile);
   CURL *curl;
   CURLcode res;
   std::string response;
   curl = curl_easy_init();
-  if (curl)
+  if (!curl)
+  {
+    throw std::runtime_error("curl didn't initialized properly");
+    return 1;
+  }
+
+  for (auto &&repo : repos)
   {
     std::string apiURL{repo["ApiUrl"]};
     curl_easy_setopt(curl, CURLOPT_URL, apiURL.c_str());
@@ -53,9 +59,6 @@ int main(int argc, char **argv)
         }
         repo["AssemblyVersion"] = api[0]["tag_name"].get<std::string>();
         repo["DownloadCount"] = totalDownloadCount;
-
-        std::ofstream outfile(argv[1]);
-        outfile << repo.dump(2);
       }
       catch (const std::exception &e)
       {
@@ -63,6 +66,8 @@ int main(int argc, char **argv)
       }
     }
   }
+  std::ofstream outfile(argv[1]);
+  outfile << repos.dump(2);
 
   return 0;
 }
