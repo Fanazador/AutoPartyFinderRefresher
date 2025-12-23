@@ -65,16 +65,4 @@ int main(int argc, char **argv)
   }
 
   return 0;
-
-  // using boost::property_tree::ptree;
-
-  // ptree root;
-
-  // boost::property_tree::read_json("repo.json", root);
-
-  // std::string name = root.get("RepoUrl", std::string{"0.1.0"});
-  // std::cout << name << std::endl;
-  // std::cout << name << std::endl;
-  // root.put("Author", "Fanyazador");
-  // boost::property_tree::write_json("repo.json", root);
 }
