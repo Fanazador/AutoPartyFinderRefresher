@@ -19,6 +19,7 @@ jobs:
 
       - name: Run Script
         run: |
+          chmod +x ./Scripts/update
           ./Scripts/update repo.json
 
       - name: Commit change
