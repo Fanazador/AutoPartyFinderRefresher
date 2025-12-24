@@ -20,7 +20,7 @@
     "DownloadLinkTesting": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/latest/download/latest.zip",
     "DownloadLinkUpdate": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/latest/download/latest.zip",
     "ApiUrl": "https://api.github.com/repos/Fanazador/AutoPartyFinderRefresher/releases?per_page=100",
-    "DownloadCount": 13,
+    "DownloadCount": 15,
     "LastUpdate": 1701231234
   }
 ]
