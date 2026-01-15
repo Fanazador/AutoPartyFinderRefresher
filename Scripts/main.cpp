@@ -6,7 +6,7 @@
 
 size_t WriteCallback(void *content, size_t size, size_t nmemb, void *userp)
 {
-  size_t totalSize = size * nmemb;
+  size_t totalSize{size * nmemb};
   std::string *buffer = static_cast<std::string *>(userp);
   buffer->append(static_cast<char *>(content), totalSize);
   return totalSize;
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     throw std::runtime_error("Failed to open repo.json");
     return 1;
   }
-  auto repos = nlohmann::ordered_json::parse(infile);
+  auto repos{nlohmann::ordered_json::parse(infile)};
   CURL *curl;
   CURLcode res;
   std::string response;
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     {
       try
       {
-        auto api = nlohmann::json::parse(response);
+        auto api{nlohmann::json::parse(response)};
 
         size_t totalDownloadCount{0};
         for (auto &&release : api)

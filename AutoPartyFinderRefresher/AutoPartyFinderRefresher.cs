@@ -1,3 +1,4 @@
+using AutoPartyFinderRefresher.Windows;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
@@ -7,8 +8,8 @@ using ECommons.Automation;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Common.Lua;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using AutoPartyFinderRefresher.Windows;
 using System;
 using TaskManager = ECommons.Automation.NeoTaskManager.TaskManager;
 namespace AutoPartyFinderRefresher;
@@ -84,7 +85,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
 
   private void OnCommand(string command, string args)
   {
-
+    Svc.Log.Debug("Receiving command line: " + args);
     if (args == "c" || args == "cfg" || args == "config")
     {
       ConfigWindow.Toggle();
@@ -92,6 +93,13 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     }
 
 #if DEBUG
+    if (int.TryParse(args, out int value))
+    {
+      Svc.Log.Debug("Testing: " + value);
+      DebugExecuteTask(value);
+      return;
+    }
+
     if (args == "debug")
     {
       Svc.Log.Debug("Running: " + running.ToString() + " LFG: " + IsPlayerLookingForGroup.ToString() + " Interval: " + (Convert.ToDouble(Config.RefreshMinuteInterval)).ToString());
@@ -99,11 +107,12 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     }
     if (args == "test")
     {
+      Svc.Log.Information(args + " command received. Manually executing task.");
       ExecuteTask();
       return;
     }
 #endif
-    Svc.Log.Information("Toggling Enable: " + !running);
+    Svc.Log.Debug("Toggling Enable: " + !running);
     running = !running;
   }
 
@@ -128,9 +137,9 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
 
     if (elapsedTime > Convert.ToDouble(Config.RefreshMinuteInterval))
     {
-      Svc.Log.Information(elapsedTime + " minute have passed executing task.");
       try
       {
+        Svc.Log.Information(elapsedTime + " minute have passed executing task.");
         elapsedTime = 0;
         ExecuteTask();
       }
@@ -153,6 +162,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     const int PartyFinderCommand = 57;
     const int RecruitMemberCommand = 14;
     const int JoinOrEditCommand = 12;
+    const int ResetSlotCommand = 32;
     const int ApplyChangeCommand = 0;
 
     AtkUnitBase* group = null;
@@ -168,8 +178,45 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     taskManager.Enqueue(() => Callback.Fire(groupDetail, true, JoinOrEditCommand));
     taskManager.EnqueueDelay(700);
     taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
+    taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ResetSlotCommand));
+    taskManager.EnqueueDelay(700);
+    taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
     taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ApplyChangeCommand));
   }
+
+#if DEBUG
+  /// <summary>
+  /// Passing in the command to test
+  /// </summary>
+  private void DebugExecuteTask(Int32 command)
+  {
+    const int PartyFinderCommand = 57;
+    const int RecruitMemberCommand = 14;
+    const int JoinOrEditCommand = 12;
+    const int OnePlayerPerJobCommand = 23;
+    const int ResetSlotCommand = 32;
+    const int ApplyChangeCommand = 0;
+
+    AtkUnitBase* group = null;
+    AtkUnitBase* groupDetail = null;
+    AtkUnitBase* groupCondition = null;
+
+    //taskManager.Enqueue((Action)(() => GenericHelpers.TryGetAddonByName("LookingForGroup", out group)));
+    //taskManager.Enqueue(() => { if (group == null) UiModule->ExecuteMainCommand(PartyFinderCommand); });
+    //taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroup", out group) && GenericHelpers.IsAddonReady(group));
+    //taskManager.Enqueue(() => Callback.Fire(group, true, RecruitMemberCommand));
+    //taskManager.EnqueueDelay(500);
+    //taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupDetail", out groupDetail) && GenericHelpers.IsAddonReady(groupDetail));
+    //taskManager.Enqueue(() => Callback.Fire(groupDetail, true, JoinOrEditCommand));
+    //taskManager.EnqueueDelay(700);
+    Svc.Log.Information("Command: " + command);
+    taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
+    taskManager.Enqueue(() => Callback.Fire(groupCondition, true, command));
+    //taskManager.EnqueueDelay(700);
+    //taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
+    //taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ApplyChangeCommand));
+  }
+  #endif
 
   private void DrawUI() => WindowSystem.Draw();
   private void ToggleConfigUi() => ConfigWindow.Toggle();
