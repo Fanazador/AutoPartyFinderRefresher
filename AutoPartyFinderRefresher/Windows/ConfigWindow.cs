@@ -42,5 +42,12 @@ public class ConfigWindow : Window, IDisposable
       configuration.RefreshMinuteInterval = intervalValue;
       configuration.Save();
     }
+
+    var enable = configuration.Enable;
+    if (ImGui.Checkbox("Enable", ref enable))
+    {
+      configuration.Enable = enable;
+      configuration.Save();
+    }
   }
 }
