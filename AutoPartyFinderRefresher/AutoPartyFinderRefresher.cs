@@ -31,8 +31,6 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
 
   private static readonly UIModule* UiModule = UIModule.Instance();
 
-  private bool running = true;
-
   private double elapsedTime = 0;
 
   public AutoPartyFinderRefresher(IDalamudPluginInterface pluginInterface)
@@ -78,7 +76,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
 
     taskManager.Dispose();
 
-    running = false;
+    Config.Enable = false;
     IsPlayerLookingForGroup = false;
     elapsedTime = 0;
   }
@@ -112,14 +110,15 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
       return;
     }
 #endif
-    Svc.Log.Debug("Toggling Enable: " + !running);
-    running = !running;
+    Svc.Log.Debug("Toggling Enable: " + !Config.Enable);
+    Config.Enable = !Config.Enable;
   }
 
   private void ConditionHandle(ConditionFlag flag, bool value)
   {
     if (flag == ConditionFlag.UsingPartyFinder)
     {
+      Svc.Log.Information("Condition change UsingPartyFinder: " + value);
       IsPlayerLookingForGroup = value;
       if (!value)
         elapsedTime = 0;
@@ -132,7 +131,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
   /// <param name="framework">Dalamud framwork</param>
   private void StartTask(IFramework framework)
   {
-    if (!running || !IsPlayerLookingForGroup)
+    if (!Config.Enable || !IsPlayerLookingForGroup)
       return;
 
     if (elapsedTime > Convert.ToDouble(Config.RefreshMinuteInterval))
@@ -179,7 +178,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     taskManager.EnqueueDelay(700);
     taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
     taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ResetSlotCommand));
-    taskManager.EnqueueDelay(700);
+    taskManager.EnqueueDelay(1000);
     taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
     taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ApplyChangeCommand));
   }
