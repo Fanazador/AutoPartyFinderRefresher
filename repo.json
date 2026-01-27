@@ -4,7 +4,7 @@
     "Name": "AutoPartyFinderRefresher",
     "InternalName": "AutoPartyFinderRefresher",
     "Description": "Automatically refreshes your pf, so you can touch grass without worry.\nSet the time interval on how often this plugin will triggers",
-    "AssemblyVersion": "0.1.8",
+    "AssemblyVersion": "0.1.9",
     "TestingAssemblyVersion": null,
     "RepoUrl": "https://github.com/Fanazador/AutoPartyFinderRefresher",
     "ApplicableVersion": "any",
@@ -20,7 +20,7 @@
     "DownloadLinkTesting": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/latest/download/latest.zip",
     "DownloadLinkUpdate": "https://github.com/Fanazador/AutoPartyFinderRefresher/releases/latest/download/latest.zip",
     "ApiUrl": "https://api.github.com/repos/Fanazador/AutoPartyFinderRefresher/releases?per_page=100",
-    "DownloadCount": 21,
+    "DownloadCount": 22,
     "LastUpdate": 1701231234
   }
 ]
