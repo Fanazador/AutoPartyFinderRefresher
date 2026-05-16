@@ -36,6 +36,6 @@ jobs:
         dotnet build --configuration Release
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v3
       with:
         files: AutoPartyFinderRefresher/bin/Release/AutoPartyFinderRefresher/latest.zip
