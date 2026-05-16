@@ -89,6 +89,12 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
       ConfigWindow.Toggle();
       return;
     }
+    if (args == "run")
+    {
+      Svc.Log.Information(args + " command received. Manually executing task.");
+      ExecuteTask();
+      return;
+    }
 
 #if DEBUG
     if (int.TryParse(args, out int value))
@@ -103,12 +109,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
       Svc.Log.Debug("LFG: " + IsPlayerLookingForGroup.ToString() + " Interval: " + (Convert.ToDouble(Config.RefreshMinuteInterval)).ToString());
       return;
     }
-    if (args == "test")
-    {
-      Svc.Log.Information(args + " command received. Manually executing task.");
-      ExecuteTask();
-      return;
-    }
+    
 #endif
     Svc.Log.Debug("Toggling Enable: " + !Config.Enable);
     Config.Enable = !Config.Enable;
@@ -161,7 +162,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     const int PartyFinderCommand = 57;
     const int RecruitMemberCommand = 14;
     const int JoinOrEditCommand = 12;
-    const int ResetSlotCommand = 32;
+    const int ResetSlotCommand = 27;
     const int ApplyChangeCommand = 0;
 
     AtkUnitBase* group = null;
@@ -180,9 +181,6 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ResetSlotCommand));
     taskManager.EnqueueDelay(1000);
     taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
-    taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ResetSlotCommand));
-    taskManager.EnqueueDelay(1000);
-    taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
     taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ApplyChangeCommand));
   }
 
@@ -192,12 +190,6 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
   /// </summary>
   private void DebugExecuteTask(Int32 command)
   {
-    const int PartyFinderCommand = 57;
-    const int RecruitMemberCommand = 14;
-    const int JoinOrEditCommand = 12;
-    const int OnePlayerPerJobCommand = 23;
-    const int ResetSlotCommand = 32;
-    const int ApplyChangeCommand = 0;
 
     AtkUnitBase* group = null;
     AtkUnitBase* groupDetail = null;
@@ -211,12 +203,12 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
     //taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupDetail", out groupDetail) && GenericHelpers.IsAddonReady(groupDetail));
     //taskManager.Enqueue(() => Callback.Fire(groupDetail, true, JoinOrEditCommand));
     //taskManager.EnqueueDelay(700);
-    Svc.Log.Information("Command: " + command);
+    //Svc.Log.Information("Command: " + command);
+    //taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
+    //taskManager.Enqueue(() => Callback.Fire(groupCondition, true, command));
+    //taskManager.EnqueueDelay(700);
     taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
     taskManager.Enqueue(() => Callback.Fire(groupCondition, true, command));
-    //taskManager.EnqueueDelay(700);
-    //taskManager.Enqueue(() => GenericHelpers.TryGetAddonByName("LookingForGroupCondition", out groupCondition) && GenericHelpers.IsAddonReady(groupCondition));
-    //taskManager.Enqueue(() => Callback.Fire(groupCondition, true, ApplyChangeCommand));
   }
   #endif
 
