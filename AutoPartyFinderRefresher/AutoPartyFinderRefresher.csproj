@@ -2,7 +2,7 @@
 <Project Sdk="Dalamud.NET.Sdk/15.0.0">
   <PropertyGroup>
     <Authors>Fanazador</Authors>
-    <Version>0.2.0.0</Version>
+    <Version>0.2.0.1</Version>
     <Description>Automatically refreshes your pf, so you can touch grass without worry.\nSet the
       time interval on how often this plugin will triggers</Description>
     <PackageProjectUrl>https://github.com/Fanazador/AutoPartyFinderRefresher</PackageProjectUrl>
