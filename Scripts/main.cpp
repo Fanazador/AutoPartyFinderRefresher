@@ -36,38 +36,56 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  for (auto &&repo : repos)
+  for (auto &repo : repos)
   {
-    std::string apiURL{repo["ApiUrl"]};
-    curl_easy_setopt(curl, CURLOPT_URL, apiURL.c_str());
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "curl/7.68.0");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-    res = curl_easy_perform(curl);
-
-    curl_easy_cleanup(curl);
-    if (res == CURLE_OK)
+    for (auto &jsonOBJ : repo)
     {
-      try
+      if(!jsonOBJ.contains("ApiUrl"))
       {
-        auto api{nlohmann::json::parse(response)};
+        std::cout << "Warning: JSON doesn't contain ApiUrl field" << std::endl;
+        continue;
+      }
 
-        size_t totalDownloadCount{0};
-        for (auto &&release : api)
-        {
-          totalDownloadCount += release["assets"][0]["download_count"].get<int>();
-        }
-        repo["AssemblyVersion"] = api[0]["tag_name"].get<std::string>();
-        repo["DownloadCount"] = totalDownloadCount;
-      }
-      catch (const std::exception &e)
+      std::string apiURL{jsonOBJ["ApiUrl"]};
+      curl_easy_setopt(curl, CURLOPT_URL, apiURL.c_str());
+      curl_easy_setopt(curl, CURLOPT_USERAGENT, "curl/7.68.0");
+      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+      curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+      res = curl_easy_perform(curl);
+
+      curl_easy_cleanup(curl);
+      if (res == CURLE_OK)
       {
-        std::cerr << e.what() << '\n';
+        try
+        {
+          auto apis{nlohmann::json::parse(response)};
+          size_t totalDownloadCount{0};
+          for (const auto &api : apis)
+          {
+            for (const auto &release : api)
+            {
+              auto assets {release["assets"]};
+              for (const auto &asset : assets)
+              {
+                if(asset.is_array() && !asset.empty())
+                {
+                  totalDownloadCount += asset[0]["download_count"].get<int>();
+                }
+              }
+
+            }
+            jsonOBJ["AssemblyVersion"] = api[0]["tag_name"].get<std::string>();
+          }
+          jsonOBJ["DownloadCount"] = totalDownloadCount;
+        }
+        catch (const std::exception &e)
+        {
+          std::cerr << e.what() << '\n';
+        }
       }
+      std::ofstream outfile(argv[1]);
+      outfile << jsonOBJ.dump(2);
     }
   }
-  std::ofstream outfile(argv[1]);
-  outfile << repos.dump(2);
-
   return 0;
 }
