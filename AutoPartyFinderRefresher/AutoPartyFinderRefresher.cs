@@ -19,6 +19,7 @@ public unsafe sealed class AutoPartyFinderRefresher : IDalamudPlugin
   private const string CommandName = "/apr";
   private static readonly string CommandHelpMessage = """
     /apr - Toggle autoparty finder refresh
+    /apr run - Force refresh manually
     /apr c | cfg | config - Toggle config window
     """;
 
